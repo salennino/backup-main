@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Regieren AI"
+description = "A secure AI assistant workspace with account access, streaming chat, Telegram linking, and premium file claims for Regieren users."
+version = "1.0.0"
+id = "artifacts/regieren-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24898
+
+[services.development]
+run = "pnpm --filter @workspace/regieren-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/regieren-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/regieren-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24898"
+BASE_PATH = "/"

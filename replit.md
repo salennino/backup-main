@@ -1,15 +1,17 @@
-# [Project name]
+# Regieren AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Regieren AI is a private assistant workspace with account access, persisted chat, Telegram linking, and premium file claims.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/regieren-ai run dev` — run the web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required runtime env: `DATABASE_URL` (managed), `SESSION_SECRET`
+- Optional integrations: `GROQ_API_KEY`, `GROQ_MODEL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_DEV_CHAT_ID`, `TELEGRAM_WEBHOOK_SECRET`, `TELEGRAM_ADMIN_IDS`
 
 ## Stack
 
@@ -22,23 +24,34 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/regieren-ai` — React/Vite web experience
+- `artifacts/api-server` — Express API and Telegram webhook
+- `lib/api-spec/openapi.yaml` — API source of truth
+- `lib/db/src/schema/regieren.ts` — PostgreSQL schema
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The requested custom email/password login is implemented with scrypt-backed hashes and signed short-format session tokens.
+- Login alerts never transmit plaintext passwords; the Telegram alert includes device and account metadata only.
+- Groq and Telegram are optional at runtime so local auth, chat history, and claim UX remain usable without external credentials.
+- Premium files store Telegram `file_id` metadata in PostgreSQL rather than copying file bytes into the database.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Account registration and login with device context
+- Assistant chat with persisted history and streaming responses
+- URL-aware assistant prompts through the optional Groq integration
+- Telegram linking, public claims, admin-only file commands, and developer-only serial allowlisting
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Keep the product scope limited to the attached Regieren AI brief.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run API codegen after changing `lib/api-spec/openapi.yaml`.
+- The web artifact requires workflow-provided `PORT` and `BASE_PATH` values.
+- Telegram admin commands are hidden from non-admin users and depend on `TELEGRAM_ADMIN_IDS`.
 
 ## Pointers
 
