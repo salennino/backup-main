@@ -1,1 +1,2 @@
 - [Regieren AI security](regieren-ai-security.md) — login alerts never transmit or persist plaintext passwords.
+- [Groq model availability](groq-model-availability.md) — verify the live model list before diagnosing valid Groq keys as broken.

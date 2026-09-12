@@ -38,14 +38,17 @@ export async function generateAssistantReply(message: string, context: ChatTurn[
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
         messages: [{ role: "system", content: system }, ...context.slice(-12), { role: "user", content: message }],
         temperature: 0.4,
       }),
       signal: AbortSignal.timeout(30000),
     });
-    if (!response.ok) throw new Error(`Groq returned ${response.status}`);
-    const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }>; error?: { message?: string } };
+    if (!response.ok) {
+      logger.warn({ status: response.status, providerError: data.error?.message }, "Groq request failed");
+      throw new Error(`Groq returned ${response.status}`);
+    }
     return data.choices?.[0]?.message?.content || "I couldn't generate a response.";
   } catch (error) {
     logger.warn({ error }, "Groq request failed");

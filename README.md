@@ -21,7 +21,7 @@ pnpm run typecheck
 
 `DATABASE_URL` is managed by Replit. Set `SESSION_SECRET` with the Secrets pane. The following are optional:
 
-- `GROQ_API_KEY` and `GROQ_MODEL` enable live Groq responses and URL summarization.
+- `GROQ_API_KEY` and `GROQ_MODEL` enable live Groq responses and URL summarization. The current default is `openai/gpt-oss-120b`.
 - `TELEGRAM_BOT_TOKEN` enables the Telegram bot.
 - `TELEGRAM_DEV_CHAT_ID` receives secure login metadata alerts.
 - `TELEGRAM_WEBHOOK_SECRET` protects the webhook.
