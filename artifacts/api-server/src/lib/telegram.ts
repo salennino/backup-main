@@ -3,7 +3,8 @@ import { logger } from "./logger";
 const token = () => process.env.TELEGRAM_BOT_TOKEN;
 
 export function isAdmin(telegramId: string | number) {
-  return (process.env.TELEGRAM_ADMIN_IDS || "").split(",").map((id) => id.trim()).filter(Boolean).includes(String(telegramId));
+  const configuredAdminIds = process.env.TELEGRAM_ADMIN_IDS || process.env.TELEGRAM_DEV_CHAT_ID || "";
+  return configuredAdminIds.split(",").map((id) => id.trim()).filter(Boolean).includes(String(telegramId));
 }
 
 export async function telegramRequest(method: string, body: Record<string, unknown>) {

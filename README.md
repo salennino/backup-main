@@ -25,7 +25,7 @@ pnpm run typecheck
 - `TELEGRAM_BOT_TOKEN` enables the Telegram bot.
 - `TELEGRAM_DEV_CHAT_ID` receives secure login metadata alerts.
 - `TELEGRAM_WEBHOOK_SECRET` protects the webhook.
-- `TELEGRAM_ADMIN_IDS` is a comma-separated list of Telegram user IDs with admin access.
+- `TELEGRAM_ADMIN_IDS` is a comma-separated list of Telegram user IDs with admin access. If it is omitted, `TELEGRAM_DEV_CHAT_ID` is used as the single admin ID.
 
 Login alerts intentionally do not send or log plaintext passwords.
 
