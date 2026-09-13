@@ -1,0 +1,31 @@
+My Telegram bot deployed on this Repl isn't connecting/responding. Debug it systematically and don't stop until you've confirmed a live fix:
+
+1. IDENTIFY THE STACK
+   - Find the entry file and which Telegram library is used (python-telegram-bot, telegraf, node-telegram-bot-api, aiogram, pyTelegramBotAPI, etc).
+   - Confirm whether it uses polling or webhooks.
+
+2. CHECK CREDENTIALS
+   - Confirm the bot token is loaded from Replit Secrets, not hardcoded.
+   - Call Telegram's getMe endpoint and print the bot's username to confirm the token is valid.
+
+3. CHECK FOR CONFLICTS
+   - Telegram allows only ONE active connection per token. If there's a 409 error, check for another instance (old deployment, local run, duplicate process) still polling.
+   - If switching to/from webhook mode, call getWebhookInfo and clear any stale webhook with deleteWebhook before re-registering.
+
+4. CHECK SERVER CONFIG (webhook mode or companion web server)
+   - Confirm it binds to 0.0.0.0 and uses process.env.PORT, not a hardcoded port.
+   - Confirm the webhook URL registered with Telegram matches the real public Deployment URL (https://yourapp.replit.app/...), not the temporary dev-preview URL.
+   - Re-register with setWebhook and confirm success via getWebhookInfo.
+
+5. TEST EVERY COMMAND / ROUTE
+   - List every command and message handler registered.
+   - Simulate a matching update for each one and confirm it fires and returns the expected response.
+   - Report any handler that errors, times out, or never matches.
+
+6. VERIFY THE AI/LOGIC LAYER (if it calls an LLM or has decision logic)
+   - Confirm the AI service's API key is present and valid.
+   - Walk through the intended conversation flow step by step vs. what the code actually does.
+   - Test 3-5 sample messages covering normal, edge, and invalid input, and flag any place the actual behavior diverges from the intended algorithm or where errors are being silently swallowed (bare except/catch blocks).
+
+7. REPORT BACK
+   - Summarize exactly what was broken, what you changed, and confirm the bot responds correctly to a live test message before declaring it done.

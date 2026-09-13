@@ -34,11 +34,11 @@ router.post("/v1/telegram/webhook", async (req, res) => {
   if (expected && req.header("X-Telegram-Bot-Api-Secret-Token") !== expected) return res.status(401).json({ error: "Invalid webhook secret." });
   const parsed = TelegramWebhookBody.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid update." });
-  const update = parsed.data as { message?: { chat?: { id?: number }; from?: { id?: number; username?: string }; text?: string; document?: { file_id?: string; file_name?: string } } };
+  const update = parsed.data as { message?: { chat?: { id?: number }; from?: { id?: number; username?: string }; text?: string; caption?: string; document?: { file_id?: string; file_name?: string } } };
   const message = update.message;
   const chatId = message?.chat?.id;
   const fromId = message?.from?.id;
-  const text = message?.text?.trim() || "";
+  const text = (message?.text || message?.caption || "").trim();
   if (!chatId || !fromId) return res.json({ message: "Ignored." });
   const admin = isAdmin(fromId);
   if (text.startsWith("/start")) {

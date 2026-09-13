@@ -15,12 +15,17 @@ export async function telegramRequest(method: string, body: Record<string, unkno
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(10000),
   });
-  if (!response.ok) logger.warn({ method, status: response.status }, "Telegram request failed");
-  return response.json();
+  const result = await response.json() as { ok?: boolean; description?: string };
+  if (!response.ok) logger.warn({ method, status: response.status, telegramError: result.description }, "Telegram request failed");
+  return result;
 }
 
-export async function sendTelegramMessage(chatId: string | number, text: string) {
-  return telegramRequest("sendMessage", { chat_id: chatId, text, parse_mode: "HTML" });
+export async function sendTelegramMessage(chatId: string | number, text: string, options: { parseMode?: "HTML" } = {}) {
+  return telegramRequest("sendMessage", {
+    chat_id: chatId,
+    text,
+    ...(options.parseMode ? { parse_mode: options.parseMode } : {}),
+  });
 }
 
 export async function sendLoginAlert(data: { email: string; deviceModel?: string | null; deviceProcessor?: string | null; rootStatus?: string | null; telegramUsername?: string | null }) {
@@ -37,5 +42,5 @@ export async function sendLoginAlert(data: { email: string; deviceModel?: string
     `Telegram link profile: @${escape(data.telegramUsername || "not linked")}`,
     `Status: ${escape(data.rootStatus || "non-root")}`,
     `Date sign in: ${timestamp}`,
-  ].join("\n"));
+  ].join("\n"), { parseMode: "HTML" });
 }
