@@ -29,6 +29,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Public liveness probe for external uptime monitors. Keep this before
+// feature routers so it never depends on authentication, a database, or an API.
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use("/api", router);
 
 export default app;
